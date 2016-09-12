@@ -1,0 +1,19 @@
+{
+    "name": "gulp-sync-dir",
+    "version": "1.0.4",
+    "description": "This gulp plugin deletes files from a directory (compiled folder) if it doesn't exist in another directory (src folder) with support for preprocessing.",
+    "keywords": ["gulp", "sync", "dir", "synchronize", "directory"],
+    "homepage": "https://github.com/StevenTheEVILZ/gulp-sync-dir",
+    "bugs": "https://github.com/StevenTheEVILZ/gulp-sync-dir/issues",
+    "license": "MIT",
+    "author": "Steven Xu <steventheevilz@gmail.com>",
+    "main": "index.js",
+    "repository": {
+         "type" : "git",
+         "url" : "https://github.com/StevenTheEVILZ/gulp-sync-dir.git"
+     },
+     "dependencies": {
+         "del": "^2.2.0",
+         "glob": "^7.0.3"
+     }
+}
