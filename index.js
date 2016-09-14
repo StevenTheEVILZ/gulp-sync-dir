@@ -1,18 +1,49 @@
 // jshint esversion: 6
-
 var del = require('del');
 var glob = require("glob");
 
 function main(options) {
 
+    // Production steps of ECMA-262, Edition 5, 15.4.4.19
+    // Reference: http://es5.github.io/#x15.4.4.19
+    if (!Array.prototype.map) {
+
+        Array.prototype.map = function(callback, thisArg) {
+            var T, A, k;
+            if (this == null) {
+                throw new TypeError(' this is null or not defined');
+            }
+            var O = Object(this);
+            var len = O.length >>> 0;
+            if (typeof callback !== 'function') {
+                throw new TypeError(callback + ' is not a function');
+            }
+            if (arguments.length > 1) {
+                T = thisArg;
+            }
+            A = new Array(len);
+            k = 0;
+            while (k < len) {
+                var kValue, mappedValue;
+                if (k in O) {
+                    kValue = O[k];
+                    mappedValue = callback.call(T, kValue, k, O);
+                    A[k] = mappedValue;
+                }
+                k++;
+            }
+            return A;
+        };
+    }
+
     var src = options.src;
-    if (src.match("/$")){
+    if (src.match("/$")) {
         src = src.slice(0, -1);
     }
     var srcFiles = glob.sync(src + '/**/*');
 
     var dest = options.target;
-    if (dest.match("/$")){
+    if (dest.match("/$")) {
         dest = dest.slice(0, -1);
     }
     var destFiles = glob.sync(dest + '/**/*');
@@ -23,12 +54,17 @@ function main(options) {
     var pre = options.extensions;
     if (pre === undefined || pre === null) pre = {};
 
-    for (var i = 0; i < srcFiles.length; i++) { srcFiles[i] = srcFiles[i].replace(src + '/', ''); } // Gets rid of src path prefix
-    for (var j = 0; j < destFiles.length; j++) { destFiles[j] = destFiles[j].replace(dest + '/', ''); } // Gets rid of dest path prefix
+    for (var i = 0; i < srcFiles.length; i++) {
+        srcFiles[i] = srcFiles[i].replace(src + '/', '');
+    } // Gets rid of src path prefix
+    for (var j = 0; j < destFiles.length; j++) {
+        destFiles[j] = destFiles[j].replace(dest + '/', '');
+    } // Gets rid of dest path prefix
 
     function escapeRegExp(str) {
         return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
     }
+
     function replaceAll(str, find, replace) {
         return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
     }
@@ -57,7 +93,9 @@ function main(options) {
         }
     }
 
-    for (var k = 0; k < oldFiles.length; k++) { oldFiles[k] = dest + '/' + oldFiles[k]; } // Add back dest path prefix
+    for (var k = 0; k < oldFiles.length; k++) {
+        oldFiles[k] = dest + '/' + oldFiles[k];
+    } // Add back dest path prefix
     for (var exFile of exclude) { // Remove excluded files
         for (var dFile of oldFiles) {
             if (exFile === dFile.split("/").pop()) oldFiles.splice(oldFiles.indexOf(dFile), 1);
